@@ -1,0 +1,15 @@
+{
+    "name": "dev.paltee.avatar-aid",
+    "version": "0.0.0",
+    "displayName": "AvatarAid",
+    "unity": "2022.3",
+    "vpmDependencies": {
+        "com.vrchat.avatars": ">=3.7.0",
+        "nadena.dev.ndmf": ">=1.4.0",
+        "nadena.dev.modular-avatar": ">=1.9.13"
+    },
+    "author": {
+        "name": "Paralleltree",
+        "url": "https://paltee.dev"
+    }
+}
