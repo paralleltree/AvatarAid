@@ -1,6 +1,6 @@
 {
     "name": "dev.paltee.avatar-aid.tests",
-    "rootNamespace": "",
+    "rootNamespace": "Paltee.AvatarAid.Tests",
     "references": [
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner",
