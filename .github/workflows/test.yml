@@ -28,6 +28,12 @@ jobs:
           repos: |
             https://vpm.nadena.dev/vpm-prerelease.json
 
+      - uses: actions/cache@v4
+        with:
+          path: .github/ProjectRoot/Library
+          key: Library-${{ hashFiles('.github/ProjectRoot/Packages/*.json') }}
+          restore-keys: Library-
+
       - uses: game-ci/unity-test-runner@v4
         env:
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
