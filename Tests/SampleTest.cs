@@ -3,23 +3,20 @@ using System.Collections.Generic;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
+using nadena.dev.ndmf;
 
-public class SampleTest
+namespace Paltee.AvatarAid.Tests
 {
-    // A Test behaves as an ordinary method
-    [Test]
-    public void SampleTestSimplePasses()
+    public class SampleTest
     {
-        // Use the Assert class to test conditions
-    }
-
-    // A UnityTest behaves like a coroutine in Play Mode. In Edit Mode you can use
-    // `yield return null;` to skip a frame.
-    [UnityTest]
-    public IEnumerator SampleTestWithEnumeratorPasses()
-    {
-        // Use the Assert class to test conditions.
-        // Use yield to skip a frame.
-        yield return null;
+        // A Test behaves as an ordinary method
+        [Test]
+        public void SampleTestSimplePasses()
+        {
+            // Use the Assert class to test conditions
+            var gameObject = new GameObject();
+            var ctx = new BuildContext(gameObject, "Assets");
+            Assert.NotNull(ctx);
+        }
     }
 }

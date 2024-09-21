@@ -1,6 +1,26 @@
 {
-    "name": "Tests",
-    "optionalUnityReferences": [
-        "TestAssemblies"
-    ]
+    "name": "dev.paltee.avatar-aid.tests",
+    "rootNamespace": "",
+    "references": [
+        "UnityEngine.TestRunner",
+        "UnityEditor.TestRunner",
+        "nadena.dev.ndmf",
+        "nadena.dev.modular-avatar.core.editor",
+        "dev.paltee.avatar-aid.editor"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "VRCSDK3A.dll"
+    ],
+    "autoReferenced": false,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
 }
