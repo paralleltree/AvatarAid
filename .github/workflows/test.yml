@@ -35,6 +35,7 @@ jobs:
           restore-keys: Library-
 
       - uses: game-ci/unity-test-runner@v4
+        id: gameci
         env:
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
           UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
@@ -43,4 +44,10 @@ jobs:
           unityVersion: 2022.3.22f1
           testMode: EditMode
           projectPath: .github/ProjectRoot
+          coverageOptions: generateAdditionalMetrics;generateHtmlReport;generateBadgeReport;assemblyFilters:+dev.paltee.*,-dev.paltee.*.tests
           githubToken: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Coverage Report
+          path: ${{ steps.gameci.outputs.coveragePath }}
