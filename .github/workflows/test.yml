@@ -41,5 +41,6 @@ jobs:
           UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
         with:
           unityVersion: 2022.3.22f1
+          testMode: EditMode
           projectPath: .github/ProjectRoot
           githubToken: ${{ secrets.GITHUB_TOKEN }}
