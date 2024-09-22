@@ -39,10 +39,26 @@ namespace Paltee.AvatarAid
         protected AnimatorController GenerateAnimatorController(Runtime.FaceEmoteInstaller installer)
         {
             var controller = new AnimatorController();
-            controller.AddLayer("Idle");
+            controller.AddLayer(GenerateIdleLayer(installer));
             controller.AddLayer("Left Hand");
             controller.AddLayer("Right Hand");
             return controller;
+        }
+
+        protected AnimatorControllerLayer GenerateIdleLayer(Runtime.FaceEmoteInstaller installer)
+        {
+            var layer = new AnimatorControllerLayer()
+            {
+                defaultWeight = 1f,
+                name = "Idle",
+                stateMachine = new AnimatorStateMachine()
+            };
+
+            var state = layer.stateMachine.AddState("Idle");
+            state.writeDefaultValues = false;
+            state.motion = installer.IdleMotion;
+
+            return layer;
         }
     }
 }

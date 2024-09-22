@@ -43,6 +43,9 @@ namespace Paltee.AvatarAid.Tests
             var gameObject = new GameObject("Test Target");
             var installerComponent = gameObject.AddComponent<Runtime.FaceEmoteInstaller>();
 
+            var idleAnim = new AnimationClip();
+            var idleAnimEvent = new AnimationEvent() { stringParameter = "testFist", time = 10f, floatParameter = 0f };
+            AnimationUtility.SetAnimationEvents(idleAnim, new[] { idleAnimEvent });
             var fistAnim = new AnimationClip();
             var fistAnimEvent = new AnimationEvent() { stringParameter = "testFist", time = 10f, floatParameter = 0f };
             AnimationUtility.SetAnimationEvents(fistAnim, new[] { fistAnimEvent });
@@ -59,6 +62,7 @@ namespace Paltee.AvatarAid.Tests
                 Open = fistAnim,
             };
 
+            installerComponent.IdleMotion = idleAnim;
             installerComponent.Definitions = new List<Runtime.ExpressionSetDefinition>();
             installerComponent.Definitions.Add(setDef0);
             installerComponent.Definitions.Add(setDef1);
@@ -76,6 +80,18 @@ namespace Paltee.AvatarAid.Tests
             Assert.IsNotNull(generatedAnimator);
 
             CollectionAssert.AreEqual(new[] { "Idle", "Left Hand", "Right Hand" }, generatedAnimator.layers.Select(layer => layer.name));
+            var idle = generatedAnimator.layers.First(layer => layer.name == "Idle");
+            ValidateIdleLayer(idle);
+
+            // -- local methods
+
+            void ValidateIdleLayer(AnimatorControllerLayer layer)
+            {
+                Assert.AreEqual(1f, layer.defaultWeight);
+
+                var idleState = layer.stateMachine.defaultState;
+                Assert.AreEqual(idleAnim, idleState.motion);
+            }
         }
     }
 }
