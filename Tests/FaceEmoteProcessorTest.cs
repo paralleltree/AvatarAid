@@ -156,7 +156,7 @@ namespace Paltee.AvatarAid.Tests
             void ValidateEmoteSetStateMachineRoot(AnimatorState root, string handSide)
             {
                 Assert.AreEqual(idleAnim, root.motion);
-                //Assert.AreEqual(false, root.writeDefaultValues);
+                Assert.AreEqual(false, root.writeDefaultValues);
 
                 foreach (var trans in root.transitions)
                 {
@@ -185,6 +185,8 @@ namespace Paltee.AvatarAid.Tests
 
             void ValidateEmoteSetStateMachineSubSetRoot(AnimatorState node, int setIndex, string handSide)
             {
+                Assert.AreEqual(false, node.writeDefaultValues);
+
                 // assert each expression set Idle to layer root
                 var childIdleToGlobalIdle = node.transitions.Where(trans => trans.destinationState.name == "Idle").Single();
                 Assert.AreEqual(0, childIdleToGlobalIdle.duration);
@@ -210,6 +212,8 @@ namespace Paltee.AvatarAid.Tests
 
             void ValidateEmoteSetStateMachineSubSetEmote(AnimatorState node, int setIndex, int gestureIndex, string handSide)
             {
+                Assert.AreEqual(false, node.writeDefaultValues);
+
                 // assert selected motion
                 var def = installerComponent.Definitions[setIndex];
                 var expectedMotion = gestureIndex switch

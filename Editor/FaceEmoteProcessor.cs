@@ -84,6 +84,7 @@ namespace Paltee.AvatarAid
             {
                 name = "Idle",
                 motion = installer.IdleMotion,
+                writeDefaultValues = false,
             };
             layer.stateMachine.AddState(idleState, new Vector3(-100, 0));
             layer.stateMachine.defaultState = idleState;
@@ -96,48 +97,56 @@ namespace Paltee.AvatarAid
                 {
                     name = $"Idle {i}",
                     motion = IdleAnimation,
+                    writeDefaultValues = false,
                 };
 
                 var fistState = new AnimatorState()
                 {
                     name = $"Fist {i}",
                     motion = def.Fist ?? EmptyAnimation,
+                    writeDefaultValues = false,
                 };
 
                 var openState = new AnimatorState()
                 {
                     name = $"Open {i}",
                     motion = def.Open ?? EmptyAnimation,
+                    writeDefaultValues = false,
                 };
 
                 var pointState = new AnimatorState()
                 {
                     name = $"Point {i}",
                     motion = def.Point ?? EmptyAnimation,
+                    writeDefaultValues = false,
                 };
 
                 var peaceState = new AnimatorState()
                 {
                     name = $"Peace {i}",
                     motion = def.Peace ?? EmptyAnimation,
+                    writeDefaultValues = false,
                 };
 
                 var rockNRollState = new AnimatorState()
                 {
                     name = $"RockNRoll {i}",
                     motion = def.RockNRoll ?? EmptyAnimation,
+                    writeDefaultValues = false,
                 };
 
                 var gunState = new AnimatorState()
                 {
                     name = $"Gun {i}",
                     motion = def.Gun ?? EmptyAnimation,
+                    writeDefaultValues = false,
                 };
 
                 var thumbsUpState = new AnimatorState()
                 {
                     name = $"Thumbs up {i}",
                     motion = def.ThumbsUp ?? EmptyAnimation,
+                    writeDefaultValues = false,
                 };
 
                 layer.stateMachine.AddState(initialState, new Vector3(i * 100, 0));
