@@ -3,7 +3,7 @@
     "rootNamespace": "Paltee.AvatarAid",
     "references": [
         "nadena.dev.ndmf",
-        "nadena.dev.modular-avatar.core.editor",
+        "nadena.dev.modular-avatar.core",
         "dev.paltee.avatar-aid.runtime"
     ],
     "includePlatforms": [],
