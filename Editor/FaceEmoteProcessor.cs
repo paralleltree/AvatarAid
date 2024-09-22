@@ -83,6 +83,7 @@ namespace Paltee.AvatarAid
             layer.stateMachine.AddState(idleState, new Vector3(-100, 0));
             layer.stateMachine.defaultState = idleState;
 
+            if (installer.Definitions == null) installer.Definitions = new List<Runtime.ExpressionSetDefinition>();
             for (int i = 0; i < installer.Definitions.Count; i++)
             {
                 var def = installer.Definitions[i];
