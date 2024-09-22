@@ -6,7 +6,7 @@
         "UnityEditor.TestRunner",
         "nadena.dev.ndmf",
         "nadena.dev.modular-avatar.core.editor",
-        "dev.paltee.avatar-aid.editor"
+        "dev.paltee.avatar-aid"
     ],
     "includePlatforms": [
         "Editor"
