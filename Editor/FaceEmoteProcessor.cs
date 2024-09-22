@@ -31,6 +31,7 @@ namespace Paltee.AvatarAid
             targetGameObject.transform.parent = buildContext.AvatarRootObject.transform;
 
             ApplyMergeAnimator(installer, targetGameObject);
+            ApplyMAParameters(targetGameObject);
         }
 
         protected void ApplyMergeAnimator(Runtime.FaceEmoteInstaller installer, GameObject target)
@@ -170,6 +171,19 @@ namespace Paltee.AvatarAid
             }
 
             return layer;
+        }
+
+        protected void ApplyMAParameters(GameObject target)
+        {
+            var parameter = target.AddComponent<ModularAvatarParameters>();
+            var conf = new ParameterConfig()
+            {
+                nameOrPrefix = ExpressionSetParameterName,
+                defaultValue = 0,
+                saved = true,
+                syncType = ParameterSyncType.Int
+            };
+            parameter.parameters.Add(conf);
         }
 
         protected AnimatorControllerParameter[] GenerateParameters()

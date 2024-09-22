@@ -241,5 +241,35 @@ namespace Paltee.AvatarAid.Tests
                 Assert.AreEqual(true, onGestureChanged.hasFixedDuration);
             }
         }
+
+        [Test]
+        public void TestProcess_GeneratesMAParameters()
+        {
+            var gameObject = new GameObject("Test Target");
+            var installerComponent = gameObject.AddComponent<Runtime.FaceEmoteInstaller>();
+
+            var context = new BuildContext(gameObject, "Assets/_TestingResources");
+
+            // act
+            var errors = ErrorReport.CaptureErrors(() => new FaceEmoteProcessor().Process(context));
+
+            // assert
+            Assert.Zero(errors.Count); // no error
+
+            var parametersComponent = gameObject.GetComponentInChildren<ModularAvatarParameters>();
+            Assert.NotNull(parametersComponent);
+
+            var expectedParams = new ParameterConfig[]
+            {
+                new ParameterConfig()
+                {
+                    nameOrPrefix = "ExpressionSet",
+                    syncType = ParameterSyncType.Int,
+                    saved = true,
+                    defaultValue = 0,
+                },
+            };
+            CollectionAssert.AreEquivalent(expectedParams, parametersComponent.parameters);
+        }
     }
 }
