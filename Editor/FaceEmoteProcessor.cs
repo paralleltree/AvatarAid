@@ -43,7 +43,10 @@ namespace Paltee.AvatarAid
 
         protected AnimatorController GenerateAnimatorController(Runtime.FaceEmoteInstaller installer)
         {
-            var controller = new AnimatorController();
+            var controller = new AnimatorController()
+            {
+                parameters = GenerateParameters(),
+            };
             controller.AddLayer(GenerateIdleLayer(installer));
             controller.AddLayer(GenerateHandLayer(installer, "Left"));
             controller.AddLayer(GenerateHandLayer(installer, "Right"));
@@ -168,6 +171,46 @@ namespace Paltee.AvatarAid
 
             return layer;
         }
+
+        protected AnimatorControllerParameter[] GenerateParameters()
+        {
+            return new AnimatorControllerParameter[]
+            {
+                 new AnimatorControllerParameter()
+                 {
+                     name = AnimatorParameters.GestureLeft,
+                     type = AnimatorControllerParameterType.Int,
+                 },
+                 new AnimatorControllerParameter()
+                 {
+                     name = AnimatorParameters.GestureRight,
+                     type = AnimatorControllerParameterType.Int,
+                 },
+                 new AnimatorControllerParameter()
+                 {
+                     name = AnimatorParameters.GestureLeftWeight,
+                     type = AnimatorControllerParameterType.Float,
+                 },
+                 new AnimatorControllerParameter()
+                 {
+                     name = AnimatorParameters.GestureRightWeight,
+                     type = AnimatorControllerParameterType.Float,
+                 },
+                 new AnimatorControllerParameter()
+                 {
+                     name = ExpressionSetParameterName,
+                     type = AnimatorControllerParameterType.Int,
+                 },
+            };
+        }
+    }
+
+    public static class AnimatorParameters
+    {
+        public const string GestureLeft = "GestureLeft";
+        public const string GestureRight = "GestureRight";
+        public const string GestureLeftWeight = "GestureLeftWeight";
+        public const string GestureRightWeight = "GestureRightWeight";
     }
 
     public static class FaceEmoteExtensions

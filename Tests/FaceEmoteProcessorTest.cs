@@ -54,6 +54,35 @@ namespace Paltee.AvatarAid.Tests
         }
 
         [Test]
+        public void TestProcess_GeneratesAnimatorWithParameters()
+        {
+            var gameObject = new GameObject("Test Target");
+            var installerComponent = gameObject.AddComponent<Runtime.FaceEmoteInstaller>();
+
+            var context = new BuildContext(gameObject, "Assets/_TestingResources");
+
+            // act
+            var errors = ErrorReport.CaptureErrors(() => new FaceEmoteProcessor().Process(context));
+
+            // assert
+            Assert.Zero(errors.Count); // no error
+
+            var generatedMergeAnimatorComponent = gameObject.GetComponentInChildren<ModularAvatarMergeAnimator>();
+            var animator = generatedMergeAnimatorComponent.animator as AnimatorController;
+
+            var expectedParameters = new (string name, AnimatorControllerParameterType type)[]
+            {
+                ("GestureLeft", AnimatorControllerParameterType.Int),
+                ("GestureRight", AnimatorControllerParameterType.Int),
+                ("GestureLeftWeight", AnimatorControllerParameterType.Float),
+                ("GestureRightWeight", AnimatorControllerParameterType.Float),
+                ("ExpressionSet", AnimatorControllerParameterType.Int),
+            };
+            var actualParameters = animator.parameters.Select(param => (param.name, param.type));
+            CollectionAssert.AreEquivalent(expectedParameters, actualParameters);
+        }
+
+        [Test]
         public void TestProcess_GeneratesAnimatorBasedOnFaceEmoteDefinition()
         {
 
