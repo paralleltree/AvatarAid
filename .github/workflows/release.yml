@@ -45,7 +45,24 @@ jobs:
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: Artifacts
-          path: |
+          name: Unitypackage
+          path: ${{ env.UNITY_PACKAGE_PATH }}
+
+      - name: Check existing release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if [ "$(gh release view --repo ${{ github.repository }} ${{ env.VERSION }} 2>&1)" != 'release not found' ]; then
+            echo "Release already exists"
+            exit 1
+          fi
+
+      - name: Create release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ env.VERSION }}
+          draft: true
+          files: |
             ${{ env.ZIP_FILE_PATH }}
             ${{ env.UNITY_PACKAGE_PATH }}
+            ${{ env.PACKAGE_PATH }}/package.json
