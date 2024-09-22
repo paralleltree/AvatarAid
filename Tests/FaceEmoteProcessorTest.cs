@@ -8,6 +8,7 @@ using UnityEditor;
 using UnityEditor.Animations;
 using UnityEngine.TestTools;
 using VRC.SDK3.Avatars.Components;
+using VRC.SDK3.Avatars.ScriptableObjects;
 using nadena.dev.ndmf;
 using nadena.dev.modular_avatar.core;
 
@@ -270,6 +271,45 @@ namespace Paltee.AvatarAid.Tests
                 },
             };
             CollectionAssert.AreEquivalent(expectedParams, parametersComponent.parameters);
+        }
+
+        [Test]
+        public void TestProcess_GeneratesMAMenuItem()
+        {
+            var gameObject = new GameObject("Test Target");
+            var installerComponent = gameObject.AddComponent<Runtime.FaceEmoteInstaller>();
+
+            installerComponent.Definitions = new List<Runtime.ExpressionSetDefinition>();
+            installerComponent.Definitions.Add(new Runtime.ExpressionSetDefinition());
+            installerComponent.Definitions.Add(new Runtime.ExpressionSetDefinition());
+
+            var context = new BuildContext(gameObject, "Assets/_TestingResources");
+
+            // act
+            var errors = ErrorReport.CaptureErrors(() => new FaceEmoteProcessor().Process(context));
+
+            // assert
+            Assert.Zero(errors.Count); // no error
+
+            var menuInstaller = gameObject.GetComponentInChildren<ModularAvatarMenuInstaller>();
+            Assert.IsNotNull(menuInstaller);
+
+            var rootMenu = menuInstaller.gameObject;
+            Assert.IsNotNull(rootMenu);
+
+            var rootMenuItem = rootMenu.GetComponent<ModularAvatarMenuItem>();
+            Assert.AreEqual(SubmenuSource.Children, rootMenuItem.MenuSource);
+            Assert.AreEqual(VRCExpressionsMenu.Control.ControlType.SubMenu, rootMenuItem.Control.type);
+
+            var children = rootMenuItem.GetComponentsInChildren<ModularAvatarMenuItem>().Where(component => component.gameObject != rootMenu).ToList();
+            Assert.IsTrue(children.All(item =>
+                item.Control.parameter.name == "ExpressionSet" &&
+                item.Control.type == VRCExpressionsMenu.Control.ControlType.Toggle &&
+                item.gameObject.name == $"Set {item.Control.value}"
+            ));
+
+            var expectedIndexSet = Enumerable.Range(0, installerComponent.Definitions.Count);
+            CollectionAssert.AreEquivalent(expectedIndexSet, children.Select(item => item.Control.value));
         }
     }
 }

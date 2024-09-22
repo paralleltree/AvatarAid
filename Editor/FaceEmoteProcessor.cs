@@ -32,6 +32,7 @@ namespace Paltee.AvatarAid
 
             ApplyMergeAnimator(installer, targetGameObject);
             ApplyMAParameters(targetGameObject);
+            ApplyMAMenuInstaller(installer, targetGameObject);
         }
 
         protected void ApplyMergeAnimator(Runtime.FaceEmoteInstaller installer, GameObject target)
@@ -184,6 +185,31 @@ namespace Paltee.AvatarAid
                 syncType = ParameterSyncType.Int
             };
             parameter.parameters.Add(conf);
+        }
+
+        protected void ApplyMAMenuInstaller(Runtime.FaceEmoteInstaller installer, GameObject target)
+        {
+            var gameObject = new GameObject("ExpressionSet");
+            gameObject.transform.parent = target.transform;
+
+            gameObject.AddComponent<ModularAvatarMenuInstaller>();
+            var menuItem = gameObject.AddComponent<ModularAvatarMenuItem>();
+            menuItem.MenuSource = SubmenuSource.Children;
+            menuItem.Control = new VRC.SDK3.Avatars.ScriptableObjects.VRCExpressionsMenu.Control();
+            menuItem.Control.type = VRC.SDK3.Avatars.ScriptableObjects.VRCExpressionsMenu.Control.ControlType.SubMenu;
+
+            for (int i = 0; i < installer.Definitions.Count; i++)
+            {
+                var expressionSetItemObject = new GameObject($"Set {i}");
+                expressionSetItemObject.transform.parent = gameObject.transform;
+                var setMenuItem = expressionSetItemObject.AddComponent<ModularAvatarMenuItem>();
+                setMenuItem.Control = new VRC.SDK3.Avatars.ScriptableObjects.VRCExpressionsMenu.Control();
+
+                setMenuItem.Control.parameter = new VRC.SDK3.Avatars.ScriptableObjects.VRCExpressionsMenu.Control.Parameter();
+                setMenuItem.Control.parameter.name = ExpressionSetParameterName;
+                setMenuItem.Control.value = i;
+                setMenuItem.Control.type = VRC.SDK3.Avatars.ScriptableObjects.VRCExpressionsMenu.Control.ControlType.Toggle;
+            }
         }
 
         protected AnimatorControllerParameter[] GenerateParameters()
