@@ -31,8 +31,18 @@ namespace Paltee.AvatarAid
         protected void ApplyMergeAnimator(Runtime.FaceEmoteInstaller installer, GameObject target)
         {
             var mergeAnimator = target.AddComponent<ModularAvatarMergeAnimator>();
+            mergeAnimator.animator = GenerateAnimatorController(installer);
             mergeAnimator.layerType = VRCAvatarDescriptor.AnimLayerType.FX;
             mergeAnimator.pathMode = MergeAnimatorPathMode.Absolute;
+        }
+
+        protected AnimatorController GenerateAnimatorController(Runtime.FaceEmoteInstaller installer)
+        {
+            var controller = new AnimatorController();
+            controller.AddLayer("Idle");
+            controller.AddLayer("Left Hand");
+            controller.AddLayer("Right Hand");
+            return controller;
         }
     }
 }
