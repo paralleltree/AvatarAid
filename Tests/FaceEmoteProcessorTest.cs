@@ -82,6 +82,11 @@ namespace Paltee.AvatarAid.Tests
             CollectionAssert.AreEqual(new[] { "Idle", "Left Hand", "Right Hand" }, generatedAnimator.layers.Select(layer => layer.name));
             var idle = generatedAnimator.layers.First(layer => layer.name == "Idle");
             ValidateIdleLayer(idle);
+            var leftHand = generatedAnimator.layers.First(layer => layer.name == "Left Hand");
+            ValidateHandLayer(leftHand, "Left");
+            var rightHand = generatedAnimator.layers.First(layer => layer.name == "Right Hand");
+            ValidateHandLayer(rightHand, "Right");
+
 
             // -- local methods
 
@@ -91,6 +96,103 @@ namespace Paltee.AvatarAid.Tests
 
                 var idleState = layer.stateMachine.defaultState;
                 Assert.AreEqual(idleAnim, idleState.motion);
+            }
+
+            void ValidateHandLayer(AnimatorControllerLayer layer, string handSide)
+            {
+                Assert.AreEqual(1f, layer.defaultWeight);
+
+                var initialState = layer.stateMachine.defaultState;
+                ValidateEmoteSetStateMachineRoot(initialState, handSide);
+            }
+
+            void ValidateEmoteSetStateMachineRoot(AnimatorState root, string handSide)
+            {
+                Assert.AreEqual(idleAnim, root.motion);
+                //Assert.AreEqual(false, root.writeDefaultValues);
+
+                foreach (var trans in root.transitions)
+                {
+                    // get sub-set Idle state
+                    var dest = trans.destinationState;
+                    if (!dest.name.StartsWith("Idle "))
+                    {
+                        Assert.Fail($"unexpected transition from {root.name} to {dest.name}");
+                    }
+                    var indexMatch = Regex.Match(dest.name, @"Idle (\d+)");
+                    if (!indexMatch.Success)
+                    {
+                        Assert.Fail($"unexpected state name: {trans.destinationState.name}");
+                    }
+                    int index = int.Parse(indexMatch.Groups[1].Value);
+
+                    // assert layer root to each sub-set Idle transition
+                    var rootToChildIdle = trans.conditions.Where(cond => cond.mode == AnimatorConditionMode.Equals && cond.parameter == "ExpressionSet" && cond.threshold == index).ToList();
+                    Assert.AreEqual(1, rootToChildIdle.Count);
+                    Assert.AreEqual(0, trans.duration);
+                    Assert.AreEqual(false, trans.hasExitTime);
+                    Assert.AreEqual(true, trans.hasFixedDuration);
+                    ValidateEmoteSetStateMachineSubSetRoot(dest, index, handSide);
+                }
+            }
+
+            void ValidateEmoteSetStateMachineSubSetRoot(AnimatorState node, int setIndex, string handSide)
+            {
+                // assert each expression set Idle to layer root
+                var childIdleToGlobalIdle = node.transitions.Where(trans => trans.destinationState.name == "Idle").Single();
+                Assert.AreEqual(0, childIdleToGlobalIdle.duration);
+                Assert.AreEqual(false, childIdleToGlobalIdle.hasExitTime);
+                Assert.AreEqual(true, childIdleToGlobalIdle.hasFixedDuration);
+                Assert.AreEqual(1, childIdleToGlobalIdle.conditions.Length);
+                Assert.AreEqual(new AnimatorCondition() { mode = AnimatorConditionMode.NotEqual, parameter = "ExpressionSet", threshold = setIndex }, childIdleToGlobalIdle.conditions[0]);
+
+
+                foreach (var trans in node.transitions.Where(trans => trans.destinationState.name != "Idle"))
+                {
+                    // Idle to expression state
+                    var cond = trans.conditions.Single();
+                    Assert.AreEqual(AnimatorConditionMode.Equals, cond.mode);
+                    Assert.AreEqual($"Gesture{handSide}", cond.parameter);
+
+                    Assert.AreEqual(0.1f, trans.duration);
+                    Assert.AreEqual(false, trans.hasExitTime);
+                    Assert.AreEqual(true, trans.hasFixedDuration);
+                    ValidateEmoteSetStateMachineSubSetEmote(trans.destinationState, setIndex, (int)cond.threshold, handSide);
+                }
+            }
+
+            void ValidateEmoteSetStateMachineSubSetEmote(AnimatorState node, int setIndex, int gestureIndex, string handSide)
+            {
+                // assert selected motion
+                var def = installerComponent.Definitions[setIndex];
+                var expectedMotion = gestureIndex switch
+                {
+                    1 => def.Fist,
+                    2 => def.Open,
+                    3 => def.Point,
+                    4 => def.Peace,
+                    5 => def.RockNRoll,
+                    6 => def.Gun,
+                    7 => def.ThumbsUp,
+                    _ => throw new System.ArgumentException()
+                };
+                if (expectedMotion != null)
+                    Assert.AreEqual(expectedMotion, node.motion);
+                else
+                    Assert.IsTrue(((AnimationClip)node.motion).empty);
+
+                var exitTransitions = node.transitions.Where(trans => trans.destinationState.name == $"Idle {setIndex}").ToList();
+                // assert gesture changed transition
+                var onGestureChanged = exitTransitions.Where(trans => trans.conditions.Any(cond => cond.mode == AnimatorConditionMode.NotEqual && cond.parameter == $"Gesture{handSide}" && cond.threshold == gestureIndex)).Single();
+                Assert.AreEqual(0.1f, onGestureChanged.duration);
+                Assert.AreEqual(false, onGestureChanged.hasExitTime);
+                Assert.AreEqual(true, onGestureChanged.hasFixedDuration);
+
+                // assert set index changed transition
+                var onSetIndexChanged = exitTransitions.Where(trans => trans.conditions.Any(cond => cond.mode == AnimatorConditionMode.NotEqual && cond.parameter == $"ExpressionSet" && cond.threshold == setIndex)).Single();
+                Assert.AreEqual(0.1f, onGestureChanged.duration);
+                Assert.AreEqual(false, onGestureChanged.hasExitTime);
+                Assert.AreEqual(true, onGestureChanged.hasFixedDuration);
             }
         }
     }
