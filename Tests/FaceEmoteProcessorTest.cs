@@ -16,6 +16,23 @@ namespace Paltee.AvatarAid.Tests
     public class FaceEmoteProcessorTest
     {
         [Test]
+        public void TestProcess_RemovesInstallerComponent()
+        {
+            var gameObject = new GameObject("Test Target");
+            var installerComponent = gameObject.AddComponent<Runtime.FaceEmoteInstaller>();
+
+            var context = new BuildContext(gameObject, "Assets/_TestingResources");
+
+            // act
+            var errors = ErrorReport.CaptureErrors(() => new FaceEmoteProcessor().Process(context));
+
+            // assert
+            Assert.Zero(errors.Count); // no error
+
+            Assert.IsNull(gameObject.GetComponentInChildren<Runtime.FaceEmoteInstaller>());
+        }
+
+        [Test]
         public void TestProcess_GeneratesMAMergeAnimator()
         {
             var gameObject = new GameObject("Test Target");
