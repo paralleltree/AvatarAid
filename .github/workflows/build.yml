@@ -46,20 +46,14 @@ jobs:
           package-path: ${{ env.UNITY_PACKAGE_PATH }}
           include-files: metaList
 
+      - name: Copy package.json
+        run: cp ${{ env.PACKAGE_PATH }}/package.json package.json
+
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: ZIP archive
-          path: ${{ env.ZIP_FILE_PATH }}
-
-      - name: Upload unitypackage
-        uses: actions/upload-artifact@v4
-        with:
-          name: Unitypackage
-          path: ${{ env.UNITY_PACKAGE_PATH }}
-
-      - name: Upload package.json
-        uses: actions/upload-artifact@v4
-        with:
-          name: package.json
-          path: ${{ env.PACKAGE_PATH }}/package.json
+          name: Artifacts
+          path: |
+            ${{ env.UNITY_PACKAGE_PATH }}
+            ${{ env.ZIP_FILE_PATH }}
+            package.json

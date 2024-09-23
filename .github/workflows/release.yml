@@ -30,6 +30,4 @@ jobs:
           tag_name: ${{ needs.build.outputs.version }}
           draft: true
           files: |
-            ${{ env.ZIP_FILE_PATH }}
-            ${{ env.UNITY_PACKAGE_PATH }}
-            ${{ env.PACKAGE_PATH }}/package.json
+            Artifacts/*
