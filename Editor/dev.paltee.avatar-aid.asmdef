@@ -6,7 +6,9 @@
         "nadena.dev.modular-avatar.core",
         "dev.paltee.avatar-aid.runtime"
     ],
-    "includePlatforms": [],
+    "includePlatforms": [
+        "Editor"
+    ],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,
