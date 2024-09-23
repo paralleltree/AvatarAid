@@ -1,6 +1,6 @@
 {
     "name": "dev.paltee.avatar-aid.editor",
-    "rootNamespace": "",
+    "rootNamespace": "Paltee.AvatarAid.Editor",
     "references": [],
     "includePlatforms": [],
     "excludePlatforms": [],

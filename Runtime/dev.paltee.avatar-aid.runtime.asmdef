@@ -1,6 +1,6 @@
 {
     "name": "dev.paltee.avatar-aid.runtime",
-    "rootNamespace": "",
+    "rootNamespace": "Paltee.AvatarAid.Runtime",
     "references": [],
     "includePlatforms": [],
     "excludePlatforms": [],
