@@ -11,6 +11,8 @@ namespace Paltee.AvatarAid.Runtime
     public sealed class FaceEmoteInstaller : MonoBehaviour, IEditorOnly
     {
         [SerializeField]
+        public float TransitionSeconds = 0.1f;
+        [SerializeField]
         public AnimationClip IdleMotion;
 
         [SerializeField]

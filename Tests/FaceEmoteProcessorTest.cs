@@ -110,6 +110,7 @@ namespace Paltee.AvatarAid.Tests
                 Open = fistAnim,
             };
 
+            installerComponent.TransitionSeconds = 0.2f;
             installerComponent.IdleMotion = idleAnim;
             installerComponent.Definitions = new List<Runtime.ExpressionSetDefinition>();
             installerComponent.Definitions.Add(setDef0);
@@ -205,7 +206,7 @@ namespace Paltee.AvatarAid.Tests
                     Assert.AreEqual(AnimatorConditionMode.Equals, cond.mode);
                     Assert.AreEqual($"Gesture{handSide}", cond.parameter);
 
-                    Assert.AreEqual(0.1f, trans.duration);
+                    Assert.AreEqual(installerComponent.TransitionSeconds, trans.duration);
                     Assert.AreEqual(false, trans.hasExitTime);
                     Assert.AreEqual(true, trans.hasFixedDuration);
                     ValidateEmoteSetStateMachineSubSetEmote(trans.destinationState, setIndex, (int)cond.threshold, handSide);
@@ -237,13 +238,13 @@ namespace Paltee.AvatarAid.Tests
                 var exitTransitions = node.transitions.Where(trans => trans.destinationState.name == $"Idle {setIndex}").ToList();
                 // assert gesture changed transition
                 var onGestureChanged = exitTransitions.Where(trans => trans.conditions.Any(cond => cond.mode == AnimatorConditionMode.NotEqual && cond.parameter == $"Gesture{handSide}" && cond.threshold == gestureIndex)).Single();
-                Assert.AreEqual(0.1f, onGestureChanged.duration);
+                Assert.AreEqual(installerComponent.TransitionSeconds, onGestureChanged.duration);
                 Assert.AreEqual(false, onGestureChanged.hasExitTime);
                 Assert.AreEqual(true, onGestureChanged.hasFixedDuration);
 
                 // assert set index changed transition
                 var onSetIndexChanged = exitTransitions.Where(trans => trans.conditions.Any(cond => cond.mode == AnimatorConditionMode.NotEqual && cond.parameter == $"ExpressionSet" && cond.threshold == setIndex)).Single();
-                Assert.AreEqual(0.1f, onGestureChanged.duration);
+                Assert.AreEqual(installerComponent.TransitionSeconds, onGestureChanged.duration);
                 Assert.AreEqual(false, onGestureChanged.hasExitTime);
                 Assert.AreEqual(true, onGestureChanged.hasFixedDuration);
             }

@@ -169,13 +169,13 @@ namespace Paltee.AvatarAid
                     layer.stateMachine.AddState(gestureStates[j], new Vector3(i * 100, j * 100 + 100));
 
                     // Idle -> Expression
-                    var initialToExpressionTrans = initialState.AddTransitionForExpression(gestureStates[j], 0.1f);
+                    var initialToExpressionTrans = initialState.AddTransitionForExpression(gestureStates[j], installer.TransitionSeconds);
                     initialToExpressionTrans.AddCondition(AnimatorConditionMode.Equals, j + 1, gestureParamName);
 
                     // Expression -> Idle(not eq gesture or not eq expressionSet)
-                    var expressionToInitialTransForGesture = gestureStates[j].AddTransitionForExpression(initialState, 0.1f);
+                    var expressionToInitialTransForGesture = gestureStates[j].AddTransitionForExpression(initialState, installer.TransitionSeconds);
                     expressionToInitialTransForGesture.AddCondition(AnimatorConditionMode.NotEqual, j + 1, gestureParamName);
-                    var expressionToInitialTransForExpressionSet = gestureStates[j].AddTransitionForExpression(initialState, 0.1f);
+                    var expressionToInitialTransForExpressionSet = gestureStates[j].AddTransitionForExpression(initialState, installer.TransitionSeconds);
                     expressionToInitialTransForExpressionSet.AddCondition(AnimatorConditionMode.NotEqual, i, ExpressionSetParameterName);
                 }
             }
