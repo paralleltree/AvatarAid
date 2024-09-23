@@ -83,7 +83,7 @@ namespace Paltee.AvatarAid
             var idleState = new AnimatorState()
             {
                 name = "Idle",
-                motion = installer.IdleMotion,
+                motion = EmptyAnimation,
                 writeDefaultValues = false,
             };
             layer.stateMachine.AddState(idleState, new Vector3(-100, 0));
@@ -96,7 +96,7 @@ namespace Paltee.AvatarAid
                 var initialState = new AnimatorState()
                 {
                     name = $"Idle {i}",
-                    motion = IdleAnimation,
+                    motion = EmptyAnimation,
                     writeDefaultValues = false,
                 };
 
