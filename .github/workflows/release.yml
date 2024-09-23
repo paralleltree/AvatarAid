@@ -4,49 +4,16 @@ on:
   push:
   workflow_dispatch:
 
-env:
-  PACKAGE_NAME: dev.paltee.avatar-aid
-
 jobs:
   build:
+    uses: ./.github/workflows/build.yml
+
+  release:
     runs-on: ubuntu-latest
+    needs: build
     steps:
-      - name: Setup package path
-        run: echo "PACKAGE_PATH=Packages/${{ env.PACKAGE_NAME }}" >> $GITHUB_ENV
-
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          path: "${{ env.PACKAGE_PATH }}"
-
-      - name: Read package version
-        id: version
-        run: echo "value=$(cat "${{ env.PACKAGE_PATH }}/package.json" | jq -r '.version')" >> $GITHUB_OUTPUT
-
-      - name: Setup environment variables
-        run: |
-          echo "ZIP_FILE_PATH=${{ env.PACKAGE_NAME }}-${{ steps.version.outputs.value }}.zip" >> $GITHUB_ENV
-          echo "UNITY_PACKAGE_PATH=${{ env.PACKAGE_NAME }}-${{ steps.version.outputs.value }}.unitypackage" >> $GITHUB_ENV
-          echo "VERSION=${{ steps.version.outputs.value }}" >> $GITHUB_ENV
-
-      - name: Create ZIP file
-        working-directory: ${{ env.PACKAGE_PATH }}
-        run: zip -r "${{ github.workspace }}/${{ env.ZIP_FILE_PATH }}" . -x '.*' 'Tests/*' Tests.meta
-
-      - name: Create meta files list
-        run: find "${{ env.PACKAGE_PATH }}" -type f -name "*.meta" | grep -Ev "^${{ env.PACKAGE_PATH }}/Tests" > metaList
-
-      - name: Create Unity package
-        uses: pCYSl5EDgo/create-unitypackage@master
-        with:
-          package-path: ${{ env.UNITY_PACKAGE_PATH }}
-          include-files: metaList
-
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: Unitypackage
-          path: ${{ env.UNITY_PACKAGE_PATH }}
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
 
       - name: Check existing release
         env:
