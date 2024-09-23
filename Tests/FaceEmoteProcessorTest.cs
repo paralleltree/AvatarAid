@@ -52,6 +52,7 @@ namespace Paltee.AvatarAid.Tests
 
             Assert.AreEqual(VRCAvatarDescriptor.AnimLayerType.FX, generatedMergeAnimatorComponent.layerType);
             Assert.AreEqual(MergeAnimatorPathMode.Absolute, generatedMergeAnimatorComponent.pathMode);
+            Assert.GreaterOrEqual(0, generatedMergeAnimatorComponent.layerPriority);
         }
 
         [Test]
