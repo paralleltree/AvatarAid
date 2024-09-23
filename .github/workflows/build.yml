@@ -2,6 +2,9 @@ name: Build
 
 on:
   workflow_call:
+    outputs:
+      version:
+        value: ${{ jobs.build.outputs.version }}
 
 env:
   PACKAGE_NAME: dev.paltee.avatar-aid
@@ -9,6 +12,8 @@ env:
 jobs:
   build:
     runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.value }}
     steps:
       - name: Setup package path
         run: echo "PACKAGE_PATH=Packages/${{ env.PACKAGE_NAME }}" >> $GITHUB_ENV

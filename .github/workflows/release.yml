@@ -19,7 +19,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          if [ "$(gh release view --repo ${{ github.repository }} ${{ env.VERSION }} 2>&1)" != 'release not found' ]; then
+          if [ "$(gh release view --repo ${{ github.repository }} ${{ needs.build.outputs.version }} 2>&1)" != 'release not found' ]; then
             echo "Release already exists"
             exit 1
           fi
@@ -27,7 +27,7 @@ jobs:
       - name: Create release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ env.VERSION }}
+          tag_name: ${{ needs.build.outputs.version }}
           draft: true
           files: |
             ${{ env.ZIP_FILE_PATH }}
