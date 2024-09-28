@@ -1,0 +1,20 @@
+{
+    "name": "dev.paltee.avatar-aid",
+    "rootNamespace": "Paltee.AvatarAid",
+    "references": [
+        "nadena.dev.ndmf",
+        "nadena.dev.modular-avatar.core",
+        "dev.paltee.avatar-aid.runtime"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
