@@ -80,79 +80,35 @@ namespace Paltee.AvatarAid
                 stateMachine = new AnimatorStateMachine(),
             };
 
-            var idleState = new AnimatorState()
-            {
-                name = "Idle",
-                motion = EmptyAnimation,
-                writeDefaultValues = false,
-            };
+            var idleState = GenerateAnimatorState("Idle", EmptyAnimation);
             layer.stateMachine.AddState(idleState, new Vector3(-100, 0));
             layer.stateMachine.defaultState = idleState;
+
+            AnimatorState GenerateAnimatorState(string name, AnimationClip motion)
+            {
+                return new AnimatorState()
+                {
+                    name = name,
+                    motion = motion ?? EmptyAnimation,
+                    writeDefaultValues = false,
+                };
+            }
 
             if (installer.Definitions == null) installer.Definitions = new List<Runtime.ExpressionSetDefinition>();
             for (int i = 0; i < installer.Definitions.Count; i++)
             {
                 var def = installer.Definitions[i];
-                var initialState = new AnimatorState()
-                {
-                    name = $"Idle {i}",
-                    motion = EmptyAnimation,
-                    writeDefaultValues = false,
-                };
-
-                var fistState = new AnimatorState()
-                {
-                    name = $"Fist {i}",
-                    motion = def.Fist ?? EmptyAnimation,
-                    writeDefaultValues = false,
-                };
-
-                var openState = new AnimatorState()
-                {
-                    name = $"Open {i}",
-                    motion = def.Open ?? EmptyAnimation,
-                    writeDefaultValues = false,
-                };
-
-                var pointState = new AnimatorState()
-                {
-                    name = $"Point {i}",
-                    motion = def.Point ?? EmptyAnimation,
-                    writeDefaultValues = false,
-                };
-
-                var peaceState = new AnimatorState()
-                {
-                    name = $"Peace {i}",
-                    motion = def.Peace ?? EmptyAnimation,
-                    writeDefaultValues = false,
-                };
-
-                var rockNRollState = new AnimatorState()
-                {
-                    name = $"RockNRoll {i}",
-                    motion = def.RockNRoll ?? EmptyAnimation,
-                    writeDefaultValues = false,
-                };
-
-                var gunState = new AnimatorState()
-                {
-                    name = $"Gun {i}",
-                    motion = def.Gun ?? EmptyAnimation,
-                    writeDefaultValues = false,
-                };
-
-                var thumbsUpState = new AnimatorState()
-                {
-                    name = $"Thumbs up {i}",
-                    motion = def.ThumbsUp ?? EmptyAnimation,
-                    writeDefaultValues = false,
-                };
+                var initialState = GenerateAnimatorState($"Idle {i}", EmptyAnimation);
 
                 layer.stateMachine.AddState(initialState, new Vector3(i * 100, 0));
                 var gestureStates = new AnimatorState[]
                 {
-                    fistState, openState, pointState, peaceState, rockNRollState, gunState, thumbsUpState,
+                    GenerateAnimatorState($"Fist {i}", def.Fist),
+                    GenerateAnimatorState($"Open {i}", def.Open),
+                    GenerateAnimatorState( $"Point {i}", def.Point),
+                    GenerateAnimatorState($"Peace {i}", def.Peace),
+                    GenerateAnimatorState($"RockNRoll {i}", def.RockNRoll),
+                    GenerateAnimatorState($"Thumbs up {i}",def.ThumbsUp),
                 };
 
                 // ExpressionSet切り替えの遷移
