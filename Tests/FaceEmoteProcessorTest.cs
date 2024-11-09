@@ -202,6 +202,7 @@ namespace Paltee.AvatarAid.Tests
                 Assert.AreEqual(new AnimatorCondition() { mode = AnimatorConditionMode.NotEqual, parameter = "ExpressionSet", threshold = setIndex }, childIdleToGlobalIdle.conditions[0]);
 
 
+                var gotGestureSet = new HashSet<int>();
                 foreach (var trans in node.transitions.Where(trans => trans.destinationState.name != "Idle"))
                 {
                     // Idle to expression state
@@ -213,7 +214,12 @@ namespace Paltee.AvatarAid.Tests
                     Assert.AreEqual(false, trans.hasExitTime);
                     Assert.AreEqual(true, trans.hasFixedDuration);
                     ValidateEmoteSetStateMachineSubSetEmote(trans.destinationState, setIndex, (int)cond.threshold, handSide);
+                    gotGestureSet.Add((int)cond.threshold);
                 }
+
+                // assert all gesture state existence
+                var expectedGestureSet = new int[] { 1, 2, 3, 4, 5, 6, 7 };
+                Assert.IsTrue(gotGestureSet.SetEquals(expectedGestureSet));
             }
 
             void ValidateEmoteSetStateMachineSubSetEmote(AnimatorState node, int setIndex, int gestureIndex, string handSide)
