@@ -105,10 +105,11 @@ namespace Paltee.AvatarAid
                 {
                     GenerateAnimatorState($"Fist {i}", def.Fist),
                     GenerateAnimatorState($"Open {i}", def.Open),
-                    GenerateAnimatorState( $"Point {i}", def.Point),
+                    GenerateAnimatorState($"Point {i}", def.Point),
                     GenerateAnimatorState($"Peace {i}", def.Peace),
                     GenerateAnimatorState($"RockNRoll {i}", def.RockNRoll),
-                    GenerateAnimatorState($"Thumbs up {i}",def.ThumbsUp),
+                    GenerateAnimatorState($"Gun {i}", def.Gun),
+                    GenerateAnimatorState($"Thumbs up {i}", def.ThumbsUp),
                 };
 
                 // ExpressionSet切り替えの遷移
