@@ -65,7 +65,7 @@ namespace Paltee.AvatarAid
             };
 
             var state = layer.stateMachine.AddState("Idle");
-            state.writeDefaultValues = false;
+            state.writeDefaultValues = installer.WriteDefaultsValues;
             state.motion = installer.IdleMotion;
 
             return layer;
@@ -90,7 +90,7 @@ namespace Paltee.AvatarAid
                 {
                     name = name,
                     motion = motion ?? EmptyAnimation,
-                    writeDefaultValues = false,
+                    writeDefaultValues = installer.WriteDefaultsValues,
                 };
             }
 

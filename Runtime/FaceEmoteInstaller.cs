@@ -14,6 +14,8 @@ namespace Paltee.AvatarAid.Runtime
         public float TransitionSeconds = 0.1f;
         [SerializeField]
         public AnimationClip IdleMotion;
+        [SerializeField]
+        public bool WriteDefaultsValues;
 
         [SerializeField]
         public List<ExpressionSetDefinition> Definitions;

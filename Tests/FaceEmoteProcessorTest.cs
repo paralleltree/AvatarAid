@@ -85,11 +85,13 @@ namespace Paltee.AvatarAid.Tests
         }
 
         [Test]
-        public void TestProcess_GeneratesAnimatorBasedOnFaceEmoteDefinition()
+        [TestCase(false)]
+        [TestCase(true)]
+        public void TestProcess_GeneratesAnimatorBasedOnFaceEmoteDefinition(bool writeDefaultValues)
         {
-
             var gameObject = new GameObject("Test Target");
             var installerComponent = gameObject.AddComponent<Runtime.FaceEmoteInstaller>();
+            installerComponent.WriteDefaultsValues = writeDefaultValues;
 
             var idleAnim = new AnimationClip();
             var idleAnimEvent = new AnimationEvent() { stringParameter = "testFist", time = 10f, floatParameter = 0f };
@@ -145,6 +147,7 @@ namespace Paltee.AvatarAid.Tests
 
                 var idleState = layer.stateMachine.defaultState;
                 Assert.AreEqual(idleAnim, idleState.motion);
+                Assert.AreEqual(writeDefaultValues, idleState.writeDefaultValues);
             }
 
             void ValidateHandLayer(AnimatorControllerLayer layer, string handSide)
@@ -158,7 +161,7 @@ namespace Paltee.AvatarAid.Tests
             void ValidateEmoteSetStateMachineRoot(AnimatorState root, string handSide)
             {
                 Assert.IsTrue(((AnimationClip)root.motion).empty);
-                Assert.AreEqual(false, root.writeDefaultValues);
+                Assert.AreEqual(writeDefaultValues, root.writeDefaultValues);
 
                 foreach (var trans in root.transitions)
                 {
@@ -188,7 +191,7 @@ namespace Paltee.AvatarAid.Tests
             void ValidateEmoteSetStateMachineSubSetRoot(AnimatorState node, int setIndex, string handSide)
             {
                 Assert.IsTrue(((AnimationClip)node.motion).empty);
-                Assert.AreEqual(false, node.writeDefaultValues);
+                Assert.AreEqual(writeDefaultValues, node.writeDefaultValues);
 
                 // assert each expression set Idle to layer root
                 var childIdleToGlobalIdle = node.transitions.Where(trans => trans.destinationState.name == "Idle").Single();
@@ -215,7 +218,7 @@ namespace Paltee.AvatarAid.Tests
 
             void ValidateEmoteSetStateMachineSubSetEmote(AnimatorState node, int setIndex, int gestureIndex, string handSide)
             {
-                Assert.AreEqual(false, node.writeDefaultValues);
+                Assert.AreEqual(writeDefaultValues, node.writeDefaultValues);
 
                 // assert selected motion
                 var def = installerComponent.Definitions[setIndex];
