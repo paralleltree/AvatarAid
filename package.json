@@ -1,6 +1,6 @@
 {
     "name": "dev.paltee.avatar-aid",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "displayName": "AvatarAid",
     "unity": "2022.3",
     "vpmDependencies": {
