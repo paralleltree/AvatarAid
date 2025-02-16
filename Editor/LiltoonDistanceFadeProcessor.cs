@@ -42,10 +42,15 @@ namespace Paltee.AvatarAid
             var meshRenderer = gameObject.GetComponent<Renderer>();
             if (meshRenderer == null) return;
 
-            foreach (var mat in meshRenderer.sharedMaterials)
+            var newMats = new Material[meshRenderer.sharedMaterials.Length];
+            for (int i = 0; i < meshRenderer.sharedMaterials.Length; i++)
             {
-                ApplyDistanceFadeToMaterial(mat, installer);
+                var newMat = new Material(meshRenderer.sharedMaterials[i]);
+                ApplyDistanceFadeToMaterial(newMat, installer);
+                newMats[i] = newMat;
             }
+
+            meshRenderer.sharedMaterials = newMats;
         }
 
         protected void ApplyDistanceFadeToMaterial(Material mat, Runtime.ApplyDistanceFade installer)
