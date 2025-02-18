@@ -10,7 +10,7 @@ namespace Paltee.AvatarAid.Runtime
 {
     [DisallowMultipleComponent]
     [AddComponentMenu("ApplyDistanceFade")]
-    public class ApplyDistanceFade : MonoBehaviour, IEditorOnly
+    public class ApplyLiltoonDistanceFade : MonoBehaviour, IEditorOnly
     {
     }
 }

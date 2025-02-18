@@ -13,7 +13,7 @@ namespace Paltee.AvatarAid
         protected readonly string DistanceFadeParamName = "_DistanceFade";
         public void Process(BuildContext context)
         {
-            var installerComponent = context.AvatarRootObject.GetComponent<Runtime.ApplyDistanceFade>();
+            var installerComponent = context.AvatarRootObject.GetComponent<Runtime.ApplyLiltoonDistanceFade>();
             if (installerComponent == null) return;
 
             Apply(context, installerComponent);
@@ -21,12 +21,12 @@ namespace Paltee.AvatarAid
             UnityEngine.Object.DestroyImmediate(installerComponent);
         }
 
-        protected void Apply(BuildContext context, Runtime.ApplyDistanceFade installer)
+        protected void Apply(BuildContext context, Runtime.ApplyLiltoonDistanceFade installer)
         {
             ProcessRecursively(context.AvatarRootObject.transform, installer);
         }
 
-        protected void ProcessRecursively(Transform parent, Runtime.ApplyDistanceFade installer)
+        protected void ProcessRecursively(Transform parent, Runtime.ApplyLiltoonDistanceFade installer)
         {
             var children = parent.GetComponentsInChildren<Transform>(true);
             foreach (var child in children.Skip(1))
@@ -37,7 +37,7 @@ namespace Paltee.AvatarAid
             ApplyDistanceFade(parent.gameObject, installer);
         }
 
-        protected void ApplyDistanceFade(GameObject gameObject, Runtime.ApplyDistanceFade installer)
+        protected void ApplyDistanceFade(GameObject gameObject, Runtime.ApplyLiltoonDistanceFade installer)
         {
             var meshRenderer = gameObject.GetComponent<Renderer>();
             if (meshRenderer == null) return;
@@ -53,7 +53,7 @@ namespace Paltee.AvatarAid
             meshRenderer.sharedMaterials = newMats;
         }
 
-        protected void ApplyDistanceFadeToMaterial(Material mat, Runtime.ApplyDistanceFade installer)
+        protected void ApplyDistanceFadeToMaterial(Material mat, Runtime.ApplyLiltoonDistanceFade installer)
         {
             var names = mat.GetPropertyNames(MaterialPropertyType.Vector);
             if (!names.Contains(DistanceFadeParamName))
