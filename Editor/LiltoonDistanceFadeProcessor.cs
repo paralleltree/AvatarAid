@@ -45,6 +45,10 @@ namespace Paltee.AvatarAid
             var newMats = new Material[meshRenderer.sharedMaterials.Length];
             for (int i = 0; i < meshRenderer.sharedMaterials.Length; i++)
             {
+                if (meshRenderer.sharedMaterials[i] == null)
+                {
+                    continue;
+                }
                 var newMat = new Material(meshRenderer.sharedMaterials[i]);
                 ApplyDistanceFadeToMaterial(newMat, installer);
                 newMats[i] = newMat;
