@@ -15,6 +15,7 @@ namespace Paltee.AvatarAid
         protected override void Configure()
         {
             InPhase(BuildPhase.Generating).Run("Apply FaceEmote", ctx => new FaceEmoteProcessor().Process(ctx));
+            InPhase(BuildPhase.Transforming).Run("Apply DistanceFade", ctx => new LiltoonDistanceFadeProcessor().Process(ctx));
         }
     }
 }
