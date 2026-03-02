@@ -71,6 +71,7 @@ namespace Paltee.AvatarAid
             return layer;
         }
 
+        // TODO: HandSideをenumで置換
         protected AnimatorControllerLayer GenerateHandLayer(Runtime.FaceEmoteInstaller installer, string handSide)
         {
             var layer = new AnimatorControllerLayer()
@@ -115,6 +116,7 @@ namespace Paltee.AvatarAid
                 // ExpressionSet切り替えの遷移
                 var idleToExpressionSetInitialState = idleState.AddTransitionForExpression(initialState, 0);
                 idleToExpressionSetInitialState.AddCondition(AnimatorConditionMode.Equals, i, ExpressionSetParameterName);
+
                 // ExpressionSet切り替えの戻り
                 var expressionSetInitialStateToIdle = initialState.AddTransitionForExpression(idleState, 0);
                 expressionSetInitialStateToIdle.AddCondition(AnimatorConditionMode.NotEqual, i, ExpressionSetParameterName);
@@ -128,10 +130,21 @@ namespace Paltee.AvatarAid
                     // Idle -> Expression
                     var initialToExpressionTrans = initialState.AddTransitionForExpression(gestureStates[j], installer.TransitionSeconds);
                     initialToExpressionTrans.AddCondition(AnimatorConditionMode.Equals, j + 1, gestureParamName);
+                    if (installer.PrimaryHandSide.ToString() != handSide)
+                    {
+                        // Primaryの手のジェスチャーが0であることを条件に加える。これがないと、両手のジェスチャーが0以外になったときに、両方のレイヤーで表情が切り替わってしまう。
+                        initialToExpressionTrans.AddCondition(AnimatorConditionMode.Equals, 0, $"Gesture{(handSide == "Left" ? "Right" : "Left")}");
+                    }
 
                     // Expression -> Idle(not eq gesture or not eq expressionSet)
                     var expressionToInitialTransForGesture = gestureStates[j].AddTransitionForExpression(initialState, installer.TransitionSeconds);
                     expressionToInitialTransForGesture.AddCondition(AnimatorConditionMode.NotEqual, j + 1, gestureParamName);
+                    if (installer.PrimaryHandSide.ToString() != handSide)
+                    {
+                        var expressionToInitialTransForGestureForPrimaryHandGesture = gestureStates[j].AddTransitionForExpression(initialState, installer.TransitionSeconds);
+                        // Primaryの手のジェスチャーが0でなくなった条件を加える。これがないと、Primaryのジェスチャーが0以外になったときに、両方のレイヤーで表情が切り替わってしまう。
+                        expressionToInitialTransForGestureForPrimaryHandGesture.AddCondition(AnimatorConditionMode.NotEqual, 0, $"Gesture{(handSide == "Left" ? "Right" : "Left")}");
+                    }
                     var expressionToInitialTransForExpressionSet = gestureStates[j].AddTransitionForExpression(initialState, installer.TransitionSeconds);
                     expressionToInitialTransForExpressionSet.AddCondition(AnimatorConditionMode.NotEqual, i, ExpressionSetParameterName);
                 }
