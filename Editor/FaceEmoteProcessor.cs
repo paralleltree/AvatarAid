@@ -179,7 +179,7 @@ namespace Paltee.AvatarAid
 
             for (int i = 0; i < installer.Definitions.Count; i++)
             {
-                var expressionSetItemObject = new GameObject($"Set {i}");
+                var expressionSetItemObject = new GameObject(string.IsNullOrWhiteSpace(installer.Definitions[i].Name) ? $"Set {i}" : installer.Definitions[i].Name);
                 expressionSetItemObject.transform.parent = gameObject.transform;
                 var setMenuItem = expressionSetItemObject.AddComponent<ModularAvatarMenuItem>();
                 setMenuItem.Control = new VRC.SDK3.Avatars.ScriptableObjects.VRCExpressionsMenu.Control();

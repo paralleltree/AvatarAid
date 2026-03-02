@@ -28,6 +28,8 @@ namespace Paltee.AvatarAid.Runtime
     public class ExpressionSetDefinition
     {
         [SerializeField]
+        public string Name;
+        [SerializeField]
         public AnimationClip Fist;
         [SerializeField]
         public AnimationClip Open;

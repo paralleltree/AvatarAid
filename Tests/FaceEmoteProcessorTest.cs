@@ -315,9 +315,14 @@ namespace Paltee.AvatarAid.Tests
             var gameObject = new GameObject("Test Target");
             var installerComponent = gameObject.AddComponent<Runtime.FaceEmoteInstaller>();
 
-            installerComponent.Definitions = new List<Runtime.ExpressionSetDefinition>();
-            installerComponent.Definitions.Add(new Runtime.ExpressionSetDefinition());
-            installerComponent.Definitions.Add(new Runtime.ExpressionSetDefinition());
+            installerComponent.Definitions = new List<Runtime.ExpressionSetDefinition>
+            {
+                new Runtime.ExpressionSetDefinition()
+                {
+                    Name = "ExpressionHappy",
+                },
+                new Runtime.ExpressionSetDefinition(),
+            };
 
             var context = new BuildContext(gameObject, "Assets/_TestingResources");
 
@@ -338,11 +343,14 @@ namespace Paltee.AvatarAid.Tests
             Assert.AreEqual(VRCExpressionsMenu.Control.ControlType.SubMenu, rootMenuItem.Control.type);
 
             var children = rootMenuItem.GetComponentsInChildren<ModularAvatarMenuItem>().Where(component => component.gameObject != rootMenu).ToList();
+            // パラメータの検証
             Assert.IsTrue(children.All(item =>
                 item.Control.parameter.name == "ExpressionSet" &&
-                item.Control.type == VRCExpressionsMenu.Control.ControlType.Toggle &&
-                item.gameObject.name == $"Set {item.Control.value}"
+                item.Control.type == VRCExpressionsMenu.Control.ControlType.Toggle
             ));
+            // メニュー名の検証
+            Assert.AreEqual("ExpressionHappy", children[0].name); // 名前が指定されている場合はそれを使用
+            Assert.AreEqual("Set 1", children[1].name); // 名前が指定されていない場合はデフォルトの名前を使用
 
             var expectedIndexSet = Enumerable.Range(0, installerComponent.Definitions.Count);
             CollectionAssert.AreEquivalent(expectedIndexSet, children.Select(item => item.Control.value));
