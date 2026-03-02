@@ -16,6 +16,9 @@ namespace Paltee.AvatarAid.Runtime
         public AnimationClip IdleMotion;
         [SerializeField]
         public bool WriteDefaultsValues;
+        // 両手のジェスチャーが有効な場合に優先される手
+        [SerializeField]
+        public HandSide PrimaryHandSide;
 
         [SerializeField]
         public List<ExpressionSetDefinition> Definitions;
@@ -38,5 +41,13 @@ namespace Paltee.AvatarAid.Runtime
         public AnimationClip Gun;
         [SerializeField]
         public AnimationClip ThumbsUp;
+    }
+
+    [Serializable]
+    public enum HandSide
+    {
+        None,
+        Left,
+        Right
     }
 }
