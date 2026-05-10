@@ -19,7 +19,7 @@ jobs:
         run: echo "PACKAGE_PATH=Packages/${{ env.PACKAGE_NAME }}" >> $GITHUB_ENV
 
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           path: "${{ env.PACKAGE_PATH }}"
 
@@ -50,7 +50,7 @@ jobs:
         run: cp ${{ env.PACKAGE_PATH }}/package.json package.json
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: Artifacts
           path: |
