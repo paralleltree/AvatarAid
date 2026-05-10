@@ -260,10 +260,13 @@ namespace Paltee.AvatarAid.Tests
         }
 
         [Test]
-        public void TestProcess_GeneratesMAParameters()
+        [TestCase(false)]
+        [TestCase(true)]
+        public void TestProcess_GeneratesMAParameters(bool isExpressionSetIndexSaved)
         {
             var gameObject = new GameObject("Test Target");
             var installerComponent = gameObject.AddComponent<Runtime.FaceEmoteInstaller>();
+            installerComponent.IsExpressionSetIndexSaved = isExpressionSetIndexSaved;
 
             var context = new BuildContext(gameObject, "Assets/_TestingResources");
 
@@ -282,7 +285,7 @@ namespace Paltee.AvatarAid.Tests
                 {
                     nameOrPrefix = "ExpressionSet",
                     syncType = ParameterSyncType.Int,
-                    saved = true,
+                    saved = isExpressionSetIndexSaved,
                     defaultValue = 0,
                 },
             };

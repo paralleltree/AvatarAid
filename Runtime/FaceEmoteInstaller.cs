@@ -16,6 +16,9 @@ namespace Paltee.AvatarAid.Runtime
         public AnimationClip IdleMotion;
         [SerializeField]
         public bool WriteDefaultsValues;
+        // 表情セットのインデックスを保存するかどうか
+        [SerializeField]
+        public bool IsExpressionSetIndexSaved;
 
         [SerializeField]
         public List<ExpressionSetDefinition> Definitions;
