@@ -50,8 +50,8 @@ namespace Paltee.AvatarAid
                 parameters = GenerateParameters(),
             };
             controller.AddLayer(GenerateIdleLayer(installer));
-            controller.AddLayer(GenerateHandLayer(installer, "Left"));
-            controller.AddLayer(GenerateHandLayer(installer, "Right"));
+            controller.AddLayer(GenerateHandLayer(installer, Runtime.HandSide.Left));
+            controller.AddLayer(GenerateHandLayer(installer, Runtime.HandSide.Right));
             return controller;
         }
 
@@ -71,7 +71,7 @@ namespace Paltee.AvatarAid
             return layer;
         }
 
-        protected AnimatorControllerLayer GenerateHandLayer(Runtime.FaceEmoteInstaller installer, string handSide)
+        protected AnimatorControllerLayer GenerateHandLayer(Runtime.FaceEmoteInstaller installer, Runtime.HandSide handSide)
         {
             var layer = new AnimatorControllerLayer()
             {
@@ -115,12 +115,13 @@ namespace Paltee.AvatarAid
                 // ExpressionSet切り替えの遷移
                 var idleToExpressionSetInitialState = idleState.AddTransitionForExpression(initialState, 0);
                 idleToExpressionSetInitialState.AddCondition(AnimatorConditionMode.Equals, i, ExpressionSetParameterName);
+
                 // ExpressionSet切り替えの戻り
                 var expressionSetInitialStateToIdle = initialState.AddTransitionForExpression(idleState, 0);
                 expressionSetInitialStateToIdle.AddCondition(AnimatorConditionMode.NotEqual, i, ExpressionSetParameterName);
 
                 // Idleと各表情間の遷移
-                string gestureParamName = handSide == "Left" ? "GestureLeft" : "GestureRight"; // TODO: improve
+                string gestureParamName = AnimatorParameters.GestureParamName(handSide);
                 for (int j = 0; j < gestureStates.Length; j++)
                 {
                     layer.stateMachine.AddState(gestureStates[j], new Vector3(i * 100, j * 100 + 100));
@@ -128,10 +129,21 @@ namespace Paltee.AvatarAid
                     // Idle -> Expression
                     var initialToExpressionTrans = initialState.AddTransitionForExpression(gestureStates[j], installer.TransitionSeconds);
                     initialToExpressionTrans.AddCondition(AnimatorConditionMode.Equals, j + 1, gestureParamName);
+                    if (installer.PrimaryHandSide != handSide)
+                    {
+                        // Primaryの手のジェスチャーが0であることを条件に加える。これがないと、両手のジェスチャーが0以外になったときに、両方のレイヤーで表情が切り替わってしまう。
+                        initialToExpressionTrans.AddCondition(AnimatorConditionMode.Equals, 0, AnimatorParameters.GestureParamName(handSide.Opposite()));
+                    }
 
                     // Expression -> Idle(not eq gesture or not eq expressionSet)
                     var expressionToInitialTransForGesture = gestureStates[j].AddTransitionForExpression(initialState, installer.TransitionSeconds);
                     expressionToInitialTransForGesture.AddCondition(AnimatorConditionMode.NotEqual, j + 1, gestureParamName);
+                    if (installer.PrimaryHandSide != handSide)
+                    {
+                        var expressionToInitialTransForGestureForPrimaryHandGesture = gestureStates[j].AddTransitionForExpression(initialState, installer.TransitionSeconds);
+                        // Primaryの手のジェスチャーが0でなくなった条件を加える。これがないと、Primaryのジェスチャーが0以外になったときに、両方のレイヤーで表情が切り替わってしまう。
+                        expressionToInitialTransForGestureForPrimaryHandGesture.AddCondition(AnimatorConditionMode.NotEqual, 0, AnimatorParameters.GestureParamName(handSide.Opposite()));
+                    }
                     var expressionToInitialTransForExpressionSet = gestureStates[j].AddTransitionForExpression(initialState, installer.TransitionSeconds);
                     expressionToInitialTransForExpressionSet.AddCondition(AnimatorConditionMode.NotEqual, i, ExpressionSetParameterName);
                 }
@@ -217,10 +229,16 @@ namespace Paltee.AvatarAid
         public const string GestureRight = "GestureRight";
         public const string GestureLeftWeight = "GestureLeftWeight";
         public const string GestureRightWeight = "GestureRightWeight";
+
+        public static string GestureParamName(Runtime.HandSide side) =>
+            side == Runtime.HandSide.Left ? GestureLeft : GestureRight;
     }
 
     public static class FaceEmoteExtensions
     {
+        public static Runtime.HandSide Opposite(this Runtime.HandSide side) =>
+            side == Runtime.HandSide.Left ? Runtime.HandSide.Right : Runtime.HandSide.Left;
+
         public static AnimatorStateTransition AddTransitionForExpression(this AnimatorState state, AnimatorState dest, float duration)
         {
             var trans = state.AddTransition(dest);

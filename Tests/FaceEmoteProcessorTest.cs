@@ -92,6 +92,7 @@ namespace Paltee.AvatarAid.Tests
             var gameObject = new GameObject("Test Target");
             var installerComponent = gameObject.AddComponent<Runtime.FaceEmoteInstaller>();
             installerComponent.WriteDefaultsValues = writeDefaultValues;
+            installerComponent.PrimaryHandSide = Runtime.HandSide.Right;
 
             var idleAnim = new AnimationClip();
             var idleAnimEvent = new AnimationEvent() { stringParameter = "testFist", time = 10f, floatParameter = 0f };
@@ -184,11 +185,12 @@ namespace Paltee.AvatarAid.Tests
                     Assert.AreEqual(0, trans.duration);
                     Assert.AreEqual(false, trans.hasExitTime);
                     Assert.AreEqual(true, trans.hasFixedDuration);
-                    ValidateEmoteSetStateMachineSubSetRoot(dest, index, handSide);
+                    // TODO: HandSideの算出ロジック見直し
+                    ValidateEmoteSetStateMachineSubSetRoot(dest, index, handSide, handSide == installerComponent.PrimaryHandSide.ToString());
                 }
             }
 
-            void ValidateEmoteSetStateMachineSubSetRoot(AnimatorState node, int setIndex, string handSide)
+            void ValidateEmoteSetStateMachineSubSetRoot(AnimatorState node, int setIndex, string handSide, bool isPrimaryHand)
             {
                 Assert.IsTrue(((AnimationClip)node.motion).empty);
                 Assert.AreEqual(writeDefaultValues, node.writeDefaultValues);
@@ -205,16 +207,26 @@ namespace Paltee.AvatarAid.Tests
                 var gotGestureSet = new HashSet<int>();
                 foreach (var trans in node.transitions.Where(trans => trans.destinationState.name != "Idle"))
                 {
+                    // Primary hand side
+                    // PrimaryHandのGestureが0であること
+                    if (!isPrimaryHand)
+                    {
+                        var notPrimaryHandCondition = trans.conditions.Where(cond => !cond.parameter.Contains(handSide)).Single();
+                        Assert.AreEqual(AnimatorConditionMode.Equals, notPrimaryHandCondition.mode);
+                        Assert.AreEqual($"Gesture{(handSide == "Left" ? "Right" : "Left")}", notPrimaryHandCondition.parameter);
+                    }
+
                     // Idle to expression state
-                    var cond = trans.conditions.Single();
-                    Assert.AreEqual(AnimatorConditionMode.Equals, cond.mode);
-                    Assert.AreEqual($"Gesture{handSide}", cond.parameter);
+                    // ジェスチャーの遷移条件のパラメーターが正しいこと
+                    var transitionCond = trans.conditions.Where(cond => cond.parameter.Contains(handSide)).Single();
+                    Assert.AreEqual(AnimatorConditionMode.Equals, transitionCond.mode);
+                    Assert.AreEqual($"Gesture{handSide}", transitionCond.parameter);
 
                     Assert.AreEqual(installerComponent.TransitionSeconds, trans.duration);
                     Assert.AreEqual(false, trans.hasExitTime);
                     Assert.AreEqual(true, trans.hasFixedDuration);
-                    ValidateEmoteSetStateMachineSubSetEmote(trans.destinationState, setIndex, (int)cond.threshold, handSide);
-                    gotGestureSet.Add((int)cond.threshold);
+                    ValidateEmoteSetStateMachineSubSetEmote(trans.destinationState, setIndex, (int)transitionCond.threshold, handSide, isPrimaryHand);
+                    gotGestureSet.Add((int)transitionCond.threshold);
                 }
 
                 // assert all gesture state existence
@@ -222,7 +234,7 @@ namespace Paltee.AvatarAid.Tests
                 Assert.IsTrue(gotGestureSet.SetEquals(expectedGestureSet));
             }
 
-            void ValidateEmoteSetStateMachineSubSetEmote(AnimatorState node, int setIndex, int gestureIndex, string handSide)
+            void ValidateEmoteSetStateMachineSubSetEmote(AnimatorState node, int setIndex, int gestureIndex, string handSide, bool isPrimaryHand)
             {
                 Assert.AreEqual(writeDefaultValues, node.writeDefaultValues);
 
@@ -250,6 +262,14 @@ namespace Paltee.AvatarAid.Tests
                 Assert.AreEqual(installerComponent.TransitionSeconds, onGestureChanged.duration);
                 Assert.AreEqual(false, onGestureChanged.hasExitTime);
                 Assert.AreEqual(true, onGestureChanged.hasFixedDuration);
+
+                if (!isPrimaryHand)
+                {
+                    var onNotPrimaryHandGestureChanged = exitTransitions.Where(trans => trans.conditions.Any(cond => cond.parameter.Contains("Gesture") && !cond.parameter.Contains(handSide))).Single();
+                    Assert.AreEqual(installerComponent.TransitionSeconds, onNotPrimaryHandGestureChanged.duration);
+                    Assert.AreEqual(false, onNotPrimaryHandGestureChanged.hasExitTime);
+                    Assert.AreEqual(true, onNotPrimaryHandGestureChanged.hasFixedDuration);
+                }
 
                 // assert set index changed transition
                 var onSetIndexChanged = exitTransitions.Where(trans => trans.conditions.Any(cond => cond.mode == AnimatorConditionMode.NotEqual && cond.parameter == $"ExpressionSet" && cond.threshold == setIndex)).Single();
