@@ -247,5 +247,7 @@ namespace Paltee.AvatarAid
             trans.duration = duration;
             return trans;
         }
+
+        public static AnimatorStateTransition AddImmediateTransition(this AnimatorState state, AnimatorState dest) => state.AddTransitionForExpression(dest, 0f);
     }
 }
