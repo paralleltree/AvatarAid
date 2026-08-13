@@ -16,7 +16,8 @@
     "allowUnsafeCode": false,
     "overrideReferences": true,
     "precompiledReferences": [
-        "VRCSDK3A.dll"
+        "VRCSDK3A.dll",
+        "VRCSDKBase.dll"
     ],
     "autoReferenced": false,
     "defineConstraints": [
