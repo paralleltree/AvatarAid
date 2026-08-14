@@ -12,10 +12,14 @@ namespace Paltee.AvatarAid
     {
         private const string IsLocalParamName = "IsLocal";
 
+        private List<string> _excludePrefixes;
+
         public void Process(BuildContext context)
         {
             var marker = context.AvatarRootObject.GetComponent<Runtime.CompressSharedIntParameters>();
             if (marker == null) return;
+
+            _excludePrefixes = marker.ExcludePrefixes;
 
             Apply(context);
 
@@ -45,6 +49,8 @@ namespace Paltee.AvatarAid
                 var controllerParamName = FindControllerParamName(expParam.name, controllerParamNames);
                 if (controllerParamName == null) continue;
 
+                if (IsExcluded(expParam.name) || IsExcluded(controllerParamName)) continue;
+
                 ProcessParameter(expParam, controllerParamName, fxController, expressionParameters);
             }
         }
@@ -61,6 +67,16 @@ namespace Paltee.AvatarAid
             }
 
             return null;
+        }
+
+        private bool IsExcluded(string paramName)
+        {
+            foreach (var prefix in _excludePrefixes)
+            {
+                if (!string.IsNullOrEmpty(prefix) && paramName.StartsWith(prefix))
+                    return true;
+            }
+            return false;
         }
 
         protected AnimatorController GetFxAnimatorController(VRCAvatarDescriptor descriptor)
