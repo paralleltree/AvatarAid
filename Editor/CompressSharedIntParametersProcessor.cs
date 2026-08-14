@@ -33,14 +33,34 @@ namespace Paltee.AvatarAid
             var fxController = GetFxAnimatorController(descriptor);
             if (fxController == null) return;
 
+            var controllerParamNames = new HashSet<string>(
+                fxController.parameters.Select(p => p.name));
+
             var syncedIntParams = expressionParameters.parameters
                 .Where(p => p.networkSynced && p.valueType == VRCExpressionParameters.ValueType.Int)
                 .ToList();
 
             foreach (var expParam in syncedIntParams)
             {
-                ProcessParameter(expParam, fxController, expressionParameters);
+                var controllerParamName = FindControllerParamName(expParam.name, controllerParamNames);
+                if (controllerParamName == null) continue;
+
+                ProcessParameter(expParam, controllerParamName, fxController, expressionParameters);
             }
+        }
+
+        private string FindControllerParamName(string expParamName, HashSet<string> controllerParamNames)
+        {
+            if (controllerParamNames.Contains(expParamName))
+                return expParamName;
+
+            foreach (var name in controllerParamNames)
+            {
+                if (name.StartsWith(expParamName + "$"))
+                    return name;
+            }
+
+            return null;
         }
 
         protected AnimatorController GetFxAnimatorController(VRCAvatarDescriptor descriptor)
@@ -59,13 +79,13 @@ namespace Paltee.AvatarAid
 
         protected void ProcessParameter(
             VRCExpressionParameters.Parameter expParam,
+            string controllerParamName,
             AnimatorController controller,
             VRCExpressionParameters expressionParameters)
         {
-            var paramName = expParam.name;
             var defaultValue = (int)expParam.defaultValue;
 
-            var possibleValues = DetectPossibleValues(controller, paramName, defaultValue);
+            var possibleValues = DetectPossibleValues(controller, controllerParamName, defaultValue);
             if (possibleValues.Count == 0) return;
 
             int bitCount = CalculateBitCount(possibleValues.Count);
@@ -81,15 +101,15 @@ namespace Paltee.AvatarAid
             EnsureIsLocalParam(controller);
             for (int n = 0; n < bitCount; n++)
             {
-                var bitParamName = $"{paramName}_bit{n}";
+                var bitParamName = $"{controllerParamName}_bit{n}";
                 if (controller.parameters.All(p => p.name != bitParamName))
                 {
                     controller.AddParameter(bitParamName, AnimatorControllerParameterType.Bool);
                 }
             }
 
-            controller.AddLayer(GenerateEncoderLayer(paramName, valueToIndex, bitCount));
-            controller.AddLayer(GenerateDecoderLayer(paramName, valueToIndex, bitCount));
+            controller.AddLayer(GenerateEncoderLayer(controllerParamName, valueToIndex, bitCount));
+            controller.AddLayer(GenerateDecoderLayer(controllerParamName, valueToIndex, bitCount));
 
             expParam.networkSynced = false;
 
@@ -98,7 +118,7 @@ namespace Paltee.AvatarAid
             {
                 paramsList.Add(new VRCExpressionParameters.Parameter
                 {
-                    name = $"{paramName}_bit{n}",
+                    name = $"{controllerParamName}_bit{n}",
                     valueType = VRCExpressionParameters.ValueType.Bool,
                     defaultValue = 0,
                     saved = false,
