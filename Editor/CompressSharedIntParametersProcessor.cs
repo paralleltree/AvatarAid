@@ -85,6 +85,8 @@ namespace Paltee.AvatarAid
         {
             var defaultValue = (int)expParam.defaultValue;
 
+            EnsureIntParameter(controller, controllerParamName);
+
             var possibleValues = DetectPossibleValues(controller, controllerParamName, defaultValue);
             if (possibleValues.Count == 0) return;
 
@@ -208,6 +210,21 @@ namespace Paltee.AvatarAid
             if (controller.parameters.All(p => p.name != IsLocalParamName))
             {
                 controller.AddParameter(IsLocalParamName, AnimatorControllerParameterType.Bool);
+            }
+        }
+
+        private void EnsureIntParameter(AnimatorController controller, string paramName)
+        {
+            var parameters = controller.parameters;
+            for (int i = 0; i < parameters.Length; i++)
+            {
+                if (parameters[i].name == paramName && parameters[i].type != AnimatorControllerParameterType.Int)
+                {
+                    parameters[i].type = AnimatorControllerParameterType.Int;
+                    parameters[i].defaultInt = (int)parameters[i].defaultFloat;
+                    controller.parameters = parameters;
+                    return;
+                }
             }
         }
 
