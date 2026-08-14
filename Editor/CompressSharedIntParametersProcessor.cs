@@ -85,7 +85,7 @@ namespace Paltee.AvatarAid
         {
             var defaultValue = (int)expParam.defaultValue;
 
-            EnsureIntParameter(controller, controllerParamName);
+            var isFloatParam = IsFloatParameter(controller, controllerParamName);
 
             var possibleValues = DetectPossibleValues(controller, controllerParamName, defaultValue);
             if (possibleValues.Count == 0) return;
@@ -110,7 +110,7 @@ namespace Paltee.AvatarAid
                 }
             }
 
-            controller.AddLayer(GenerateEncoderLayer(controllerParamName, valueToIndex, bitCount));
+            controller.AddLayer(GenerateEncoderLayer(controllerParamName, valueToIndex, bitCount, isFloatParam));
             controller.AddLayer(GenerateDecoderLayer(controllerParamName, valueToIndex, bitCount));
 
             expParam.networkSynced = false;
@@ -213,25 +213,16 @@ namespace Paltee.AvatarAid
             }
         }
 
-        private void EnsureIntParameter(AnimatorController controller, string paramName)
+        private bool IsFloatParameter(AnimatorController controller, string paramName)
         {
-            var parameters = controller.parameters;
-            for (int i = 0; i < parameters.Length; i++)
-            {
-                if (parameters[i].name == paramName && parameters[i].type != AnimatorControllerParameterType.Int)
-                {
-                    parameters[i].type = AnimatorControllerParameterType.Int;
-                    parameters[i].defaultInt = (int)parameters[i].defaultFloat;
-                    controller.parameters = parameters;
-                    return;
-                }
-            }
+            return controller.parameters.Any(p => p.name == paramName && p.type == AnimatorControllerParameterType.Float);
         }
 
         protected AnimatorControllerLayer GenerateEncoderLayer(
             string paramName,
             Dictionary<int, int> valueToIndex,
-            int bitCount)
+            int bitCount,
+            bool isFloatParam)
         {
             var stateMachine = new AnimatorStateMachine();
             var idleState = new AnimatorState { name = "Idle" };
@@ -266,7 +257,15 @@ namespace Paltee.AvatarAid
                 transition.hasExitTime = false;
                 transition.hasFixedDuration = true;
                 transition.AddCondition(AnimatorConditionMode.If, 1, IsLocalParamName);
-                transition.AddCondition(AnimatorConditionMode.Equals, value, paramName);
+                if (isFloatParam)
+                {
+                    transition.AddCondition(AnimatorConditionMode.Greater, value - 0.5f, paramName);
+                    transition.AddCondition(AnimatorConditionMode.Less, value + 0.5f, paramName);
+                }
+                else
+                {
+                    transition.AddCondition(AnimatorConditionMode.Equals, value, paramName);
+                }
             }
 
             return new AnimatorControllerLayer
