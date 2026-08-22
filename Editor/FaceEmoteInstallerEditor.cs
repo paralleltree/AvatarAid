@@ -67,15 +67,21 @@ namespace Paltee.AvatarAid.Editor
                 ? _defaultDefinitionIndex.intValue + 1
                 : 0;
 
+            var popupLabel = new GUIContent("Default Expression Set", "アバターロード時・パラメータ未同期時に選択される Expression Set です。");
+            var rect = EditorGUILayout.GetControlRect();
+
+            EditorGUI.BeginProperty(rect, popupLabel, _defaultDefinitionIndex);
+
+            var contentRect = EditorGUI.PrefixLabel(rect, popupLabel);
+
             EditorGUI.BeginChangeCheck();
-            var newSelection = EditorGUILayout.Popup(
-                new GUIContent("Default Expression Set", "アバターロード時・パラメータ未同期時に選択される Expression Set です。"),
-                currentSelection,
-                options.ToArray());
+            var newSelection = EditorGUI.Popup(contentRect, currentSelection, options.ToArray());
             if (EditorGUI.EndChangeCheck())
             {
                 _defaultDefinitionIndex.intValue = newSelection - 1;
             }
+
+            EditorGUI.EndProperty();
         }
     }
 }
