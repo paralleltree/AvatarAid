@@ -313,6 +313,46 @@ namespace Paltee.AvatarAid.Tests
         }
 
         [Test]
+        [TestCase(-1, 0)] // デフォルト未指定の場合は0
+        [TestCase(0, 0)]
+        [TestCase(1, 1)]
+        [TestCase(2, 0)] // Definitionsの範囲外の場合は0扱い
+        public void TestProcess_GeneratesMAParameters_WithDefaultDefinitionIndex(int defaultDefinitionIndex, int expectedDefaultValue)
+        {
+            var gameObject = new GameObject("Test Target");
+            var installerComponent = gameObject.AddComponent<Runtime.FaceEmoteInstaller>();
+            installerComponent.Definitions = new List<Runtime.ExpressionSetDefinition>
+            {
+                new Runtime.ExpressionSetDefinition(),
+                new Runtime.ExpressionSetDefinition(),
+            };
+            installerComponent.DefaultDefinitionIndex = defaultDefinitionIndex;
+
+            var context = new BuildContext(gameObject, "Assets/_TestingResources");
+
+            // act
+            var errors = ErrorReport.CaptureErrors(() => new FaceEmoteProcessor().Process(context));
+
+            // assert
+            Assert.Zero(errors.Count); // no error
+
+            var parametersComponent = gameObject.GetComponentInChildren<ModularAvatarParameters>();
+            Assert.NotNull(parametersComponent);
+
+            var expectedParams = new ParameterConfig[]
+            {
+                new ParameterConfig()
+                {
+                    nameOrPrefix = "ExpressionSet",
+                    syncType = ParameterSyncType.Int,
+                    saved = false,
+                    defaultValue = expectedDefaultValue,
+                },
+            };
+            CollectionAssert.AreEquivalent(expectedParams, parametersComponent.parameters);
+        }
+
+        [Test]
         public void TestProcess_GeneratesMAMenuItem()
         {
             var gameObject = new GameObject("Test Target");

@@ -158,7 +158,7 @@ namespace Paltee.AvatarAid
             var conf = new ParameterConfig()
             {
                 nameOrPrefix = ExpressionSetParameterName,
-                defaultValue = 0,
+                defaultValue = installer.HasDefaultDefinition ? installer.DefaultDefinitionIndex : 0,
                 saved = installer.IsExpressionSetIndexSaved,
                 syncType = ParameterSyncType.Int
             };
