@@ -16,6 +16,10 @@ namespace Paltee.AvatarAid
         {
             InPhase(BuildPhase.Generating).Run("Apply FaceEmote", ctx => new FaceEmoteProcessor().Process(ctx));
             InPhase(BuildPhase.Transforming).Run("Apply DistanceFade", ctx => new LiltoonDistanceFadeProcessor().Process(ctx));
+            InPhase(BuildPhase.Optimizing)
+                .AfterPlugin("nadena.dev.modular-avatar")
+                .AfterPlugin("nadena.dev.modular-avatar.late-transform-stages")
+                .Run("Compress Shared Int Parameters", ctx => new CompressSharedIntParametersProcessor().Process(ctx));
         }
     }
 }
