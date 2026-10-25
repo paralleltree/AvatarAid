@@ -23,8 +23,15 @@ namespace Paltee.AvatarAid.Runtime
         [SerializeField]
         public HandSide PrimaryHandSide;
 
+        // デフォルトで選択されるDefinitionのインデックス。-1の場合はデフォルト指定なし(0番扱い)。
+        [SerializeField]
+        public int DefaultDefinitionIndex = -1;
+
         [SerializeField]
         public List<ExpressionSetDefinition> Definitions;
+
+        public bool HasDefaultDefinition =>
+            Definitions != null && DefaultDefinitionIndex >= 0 && DefaultDefinitionIndex < Definitions.Count;
     }
 
     [Serializable]
